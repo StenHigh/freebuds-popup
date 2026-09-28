@@ -11,15 +11,15 @@ jobs:
       run:
         working-directory: android
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.14.3"
+      - run: echo "sdk.dir=$ANDROID_HOME" > local.properties && ls $ANDROID_HOME/platforms
       - run: gradle testDebugUnitTest assembleRelease
       - uses: actions/upload-artifact@v4
         with:
@@ -29,7 +29,7 @@ jobs:
   macos:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: protocol tests
         run: cd macos && mkdir -p build && swiftc Sources/HuaweiSpp.swift Tests/main.swift -o build/tests && ./build/tests
       - run: ARCH=universal ./macos/build.sh
