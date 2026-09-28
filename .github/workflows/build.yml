@@ -38,3 +38,31 @@ jobs:
         with:
           name: BudsPopup-macos
           path: macos/build/BudsPopup-macos.zip
+
+  release:
+    needs: [android, macos]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - run: |
+          cd dist
+          mv *.apk BudsPopup.apk
+          ls -la
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Buds Popup (сборка ${{ github.run_number }})
+          make_latest: true
+          body: |
+            Автосборка из коммита ${{ github.sha }}.
+            - **BudsPopup.apk** — Android (Xiaomi / HyperOS), Android 12+
+            - **BudsPopup-macos.zip** — macOS 13+, распаковать и перенести в /Applications
+          files: |
+            dist/BudsPopup.apk
+            dist/BudsPopup-macos.zip
